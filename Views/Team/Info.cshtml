@@ -1,0 +1,69 @@
+@using System.Security.Claims
+@model RemoteWork.Models.Team
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isLead = Model.LeadId == User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+@functions {
+
+    object? GetHtmlAttributes(bool isLead)
+    {
+        return !isLead ? new { disabled = true } : null;
+    }
+
+}
+
+<section class="py-4 py-xl-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card">
+                <div class="card-body px-sm-5">
+                    <h2 class="text-center mb-2">Команда</h2>
+                    <form asp-action="Info">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            @* @Html.TextBoxFor(m => m.Name) *@
+                            <input
+                                asp-for="Name"
+                                class="form-control"
+                                aria-required="true"
+                                disabled="@(!isLead)"/>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group my-3">
+                            <label asp-for="LeadId" class="control-label"></label>
+                            <input class="form-control" aria-required="true" value="@Model.Lead.FirstName @Model.Lead.LastName" disabled/>
+                            <span asp-validation-for="LeadId" class="text-danger"></span>
+                        </div>
+                        @if (isLead)
+                        {
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit">Изменить</button>
+                            </div>
+                        }
+                    </form>
+                    @if (isLead)
+                    {
+                        <form asp-action="Delete" asp-route-id="@Model.TeamId">
+                            <button class="btn btn-danger mt-4" type="submit">Удалить команду</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="text-center mt-4">Участники</h2>
+    <div class="d-flex flex-wrap gap-5 p-3">
+        <p>Paragraph</p>
+        <p>Paragraph</p>
+        <p>Paragraph</p>
+        <p>Paragraph</p>
+    </div>
+    <form asp-action="Quit" class="text-center" asp-route-id="@Model.TeamId">
+        <button class="btn btn-danger" type="submit">Покинуть команду</button>
+    </form>
+</section>

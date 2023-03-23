@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="container text-center" style="max-width: 960px">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="p-4 p-lg-5">
+            <h1 class="fw-bold my-5 fs-2">
+                Создайте команду или присоединитесь к существующей
+            </h1>
+            <div class="d-flex float-none justify-content-center flex-wrap gap-3">
+                <a asp-action="Create" asp-controller="Team" class="btn btn-primary" type="button" style="min-width: 150px;">
+                    Создать
+                </a>
+                <a class="btn btn-primary" type="button" style="min-width: 150px;">
+                    Присоединиться
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="p-4 px-lg-5">
+            <h1 class="fw-bold my-5 fs-2">
+                Добро пожаловать! Авторизируйтесь, чтобы получить доступ к рабочему пространству
+            </h1>
+            <div class="d-flex float-none justify-content-center flex-wrap gap-3">
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary" type="button" style="min-width: 150px;">
+                    Зарегистрироваться
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary" type="button" style="min-width: 150px;">
+                    Войти
+                </a>
+            </div>
+        </div>
+    }
+</div>

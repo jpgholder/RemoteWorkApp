@@ -1,0 +1,43 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+<div class="mx-auto col-md-4" style="margin-top: 15vh">
+    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <h2 class="text-center mb-4">Регистрация</h2>
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="_"/>
+            <label asp-for="Input.Username"></label>
+            <span asp-validation-for="Input.Username" class="ms-3 text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.FirstName" class="form-control" autocomplete="first-name" aria-required="true" placeholder="_"/>
+            <label asp-for="Input.FirstName"></label>
+            <span asp-validation-for="Input.FirstName" class="ms-3 text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.LastName" class="form-control" autocomplete="last-name" aria-required="true" placeholder="_"/>
+            <label asp-for="Input.LastName"></label>
+            <span asp-validation-for="Input.LastName" class="ms-3 text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="_"/>
+            <label asp-for="Input.Password"></label>
+            <span asp-validation-for="Input.Password" class="ms-3 text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="_"/>
+            <label asp-for="Input.ConfirmPassword"></label>
+            <span asp-validation-for="Input.ConfirmPassword" class="ms-3 text-danger"></span>
+        </div>
+        <div class="text-center">
+            <button id="registerSubmit" type="submit" class="btn btn-primary">Зарегестрироваться</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
