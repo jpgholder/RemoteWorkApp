@@ -12,19 +12,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Team> Team { get; set; } = default!;
-    
+    public DbSet<Chat> Chats { get; set; } = default!;
+    public DbSet<Message> Messages { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<ApplicationUser>()
-            .HasOne(p => p.Team)
-            .WithMany(p => p.Members)
-            .HasForeignKey(p => p.TeamId).OnDelete(DeleteBehavior.SetNull);
-
+            .HasOne(u => u.Team)
+            .WithMany(t => t.Members)
+            .HasForeignKey(u => u.TeamId).OnDelete(DeleteBehavior.SetNull);
+        
         modelBuilder.Entity<Team>()
-            .HasOne(p => p.Lead)
+            .HasOne(t => t.Lead)
             .WithOne()
-            .HasForeignKey<Team>(p => p.LeadId);
+            .HasForeignKey<Team>(t => t.LeadId);
     }
 }

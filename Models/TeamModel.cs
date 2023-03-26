@@ -6,8 +6,7 @@ namespace RemoteWork.Models;
 
 public class Team
 {   
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string TeamId { get; set; } = default!;
     [Required(ErrorMessage = "Обязательное поле")]
     [DisplayName("Название команды")]
@@ -17,4 +16,5 @@ public class Team
     public ApplicationUser Lead { get; set; } = default!;
 
     public List<ApplicationUser> Members { get; set; } = new();
+    public Chat Chat { get; set; } = default!;
 }

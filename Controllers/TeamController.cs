@@ -15,8 +15,10 @@ public class TeamMember : Attribute, IAuthorizationFilter
     {
         var userManager = context.HttpContext.RequestServices.GetService<UserManager<ApplicationUser>>()!;
         var user = userManager.GetUserAsync(context.HttpContext.User).Result!;
-        var teamId = context.RouteData.Values["id"]?.ToString();
-        if (user.TeamId != teamId)
+        var teamId = context.RouteData.Values["id"];
+        if (teamId == null)
+            context.Result = new NotFoundResult();
+        else if (user.TeamId != teamId.ToString())
             context.Result = new ForbidResult();
     }
 }
@@ -32,15 +34,20 @@ public class TeamController : Controller
         _context = context;
         _userManager = userManager;
     }
-
-
+    
+    private bool TeamExists(string id)
+    {
+        return (_context.Team?.Any(e => e.TeamId == id)).GetValueOrDefault();
+    }
+    
+    // GET Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    
+    // POST Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("TeamId,Name")] Team team)
@@ -71,8 +78,9 @@ public class TeamController : Controller
         return View(team);
     }
 
-    // GET Edit
+    // GET Info
     [TeamMember]
+    [Route("Team/Info/{id?}")]
     public async Task<IActionResult> Info(string? id)
     {
         if (id == null)
@@ -80,19 +88,20 @@ public class TeamController : Controller
             return NotFound();
         }
 
-        var team = await _context.Team.Include(t => t.Lead).FirstOrDefaultAsync(t => t.TeamId == id);
+        var team = await _context.Team.Include(t => t.Lead)
+            .Include(t => t.Members)
+            .FirstOrDefaultAsync(t => t.TeamId == id);
         if (team == null)
             return NotFound();
 
         return View(team);
     }
 
-    // POST Edit
+    // POST Update
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost, ActionName("Info")]
-    [TeamMember]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ActionName("Info"), Route("Team/Info/{id?}")]
+    [TeamMember, ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(string id)
     {
         var team = await _context.Team.Include(t => t.Lead).FirstOrDefaultAsync(t => t.TeamId == id);
@@ -100,7 +109,6 @@ public class TeamController : Controller
         {
             return NotFound();
         }
-        // var user = await _userManager.GetUserAsync(User);
         if (team.LeadId != User.FindFirstValue(ClaimTypes.NameIdentifier))
             return Forbid("Вы не являетесь тимлидом данной команды");
         if (!await TryUpdateModelAsync(team, "", t => t.Name)) return View(team);
@@ -122,9 +130,8 @@ public class TeamController : Controller
     }
 
     // POST User exit from team
-    [HttpPost]
-    [TeamMember]
-    [ValidateAntiForgeryToken]
+    [HttpPost, Route("Team/{id}/Quit")]
+    [TeamMember, ValidateAntiForgeryToken]
     public async Task<IActionResult> Quit(string? id)
     {
         if (id == null)
@@ -149,14 +156,14 @@ public class TeamController : Controller
             else
                 _context.Team.Remove(team);
         }
+
         await _context.SaveChangesAsync();
         return RedirectToAction("Index", "Home");
     }
 
     // POST Delete
-    [HttpPost]
-    [TeamMember]
-    [ValidateAntiForgeryToken]
+    [HttpPost, Route("Team/{id}/Delete")]
+    [TeamMember, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string id)
     {
         var team = await _context.Team.FindAsync(id);
@@ -168,9 +175,13 @@ public class TeamController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction("Index", "Home");
     }
-
-    private bool TeamExists(string id)
-    {
-        return (_context.Team?.Any(e => e.TeamId == id)).GetValueOrDefault();
-    }
+    
+    // [HttpGet("Team/{id}/Chat")]
+    // public Task<IActionResult> Chat(string id)
+    // {
+    //     return Task.FromResult<IActionResult>(Content("test"));
+    // }
+    
+    // GET Chat messages
+    
 }

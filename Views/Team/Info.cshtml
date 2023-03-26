@@ -57,11 +57,11 @@
         </div>
     </div>
     <h2 class="text-center mt-4">Участники</h2>
-    <div class="d-flex flex-wrap gap-5 p-3">
-        <p>Paragraph</p>
-        <p>Paragraph</p>
-        <p>Paragraph</p>
-        <p>Paragraph</p>
+    <div class="d-flex flex-wrap gap-5 p-3 justify-content-center my-3">
+        @for (var i = 0; i < Model.Members.Count; ++i)
+        {
+            <p>@(i+1). @Model.Members[i].FullName</p>
+        }
     </div>
     <form asp-action="Quit" class="text-center" asp-route-id="@Model.TeamId">
         <button class="btn btn-danger" type="submit">Покинуть команду</button>

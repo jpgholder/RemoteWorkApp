@@ -5,6 +5,7 @@ public class ApplicationUser: IdentityUser
 {
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;
+    public string FullName => $"{FirstName} {LastName}";
 
     public string? TeamId { get; set; }
     public Team? Team { get; set; }
