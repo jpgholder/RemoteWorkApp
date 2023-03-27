@@ -43,14 +43,23 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(
-    name: "team-info",
-    pattern: "Team/{id?}",
-    defaults: new { controller = "Team", action = "Info"}
-    
-);
+    name: "info",
+    pattern: "Team/{id}/{action=Info}",
+    defaults: new { controller = "Team", action = "Info" });
+app.MapControllerRoute(
+    name: "create",
+    pattern: "Team/Create",
+    defaults: new { controller = "Team", action = "Create" });
+// app.MapControllerRoute(
+//     name: "quit",
+//     pattern: "Team/{id?}",
+//     defaults: new { controller = "Team", action = "Info" });
+
+
 app.MapRazorPages();
 app.Run();

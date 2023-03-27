@@ -80,7 +80,7 @@ public class TeamController : Controller
 
     // GET Info
     [TeamMember]
-    [Route("Team/Info/{id?}")]
+    [Route("Team/{id}")]
     public async Task<IActionResult> Info(string? id)
     {
         if (id == null)
@@ -100,7 +100,7 @@ public class TeamController : Controller
     // POST Update
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost, ActionName("Info"), Route("Team/Info/{id?}")]
+    [HttpPost, ActionName("Info")]
     [TeamMember, ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(string id)
     {

@@ -12,7 +12,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Team> Team { get; set; } = default!;
-    public DbSet<Chat> Chats { get; set; } = default!;
     public DbSet<Message> Messages { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
