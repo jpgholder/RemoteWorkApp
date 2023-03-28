@@ -2,18 +2,9 @@
 @model RemoteWork.Models.Team
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Команда";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var isLead = Model.LeadId == User.FindFirstValue(ClaimTypes.NameIdentifier);
-}
-
-@functions {
-
-    object? GetHtmlAttributes(bool isLead)
-    {
-        return !isLead ? new { disabled = true } : null;
-    }
-
 }
 
 <section class="py-4 py-xl-5">
@@ -26,7 +17,6 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-group">
                             <label asp-for="Name" class="control-label"></label>
-                            @* @Html.TextBoxFor(m => m.Name) *@
                             <input
                                 asp-for="Name"
                                 class="form-control"
@@ -58,7 +48,7 @@
     </div>
     <h2 class="text-center mt-4">Участники</h2>
     <div class="d-flex flex-wrap gap-5 p-3 justify-content-center my-3">
-        @for (var i = 0; i < Model.Members.Count; ++i)
+        @for (var i = 0; i < Model.Members?.Count; ++i)
         {
             <p>@(i+1). @Model.Members[i].FullName</p>
         }

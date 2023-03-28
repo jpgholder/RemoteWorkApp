@@ -1,0 +1,29 @@
+﻿@model RemoteWork.Models.Team
+
+@{
+    ViewData["Title"] = "Вступить в команду";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-5">
+            <div class="card mb-5">
+                <div class="card-body p-sm-5">
+                    <h2 class="text-center mb-4">Вступить в команду</h2>
+                    <form asp-action="Join">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="TeamId" class="form-control" aria-required="true" placeholder="name" required="required"/>
+                            <label asp-for="TeamId" class="form-label">ID команды</label>
+                            <span asp-validation-for="TeamId" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary d-block w-100" type="submit">Вступить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

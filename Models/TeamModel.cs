@@ -15,6 +15,6 @@ public class Team
     public string LeadId { get; set; } = default!;
     public ApplicationUser Lead { get; set; } = default!;
 
-    public List<ApplicationUser> Members { get; set; } = new();
-    public List<Message> Chat { get; set; } = new();
+    public List<ApplicationUser>? Members { get; set; }
+    public List<Message>? Chat { get; set; } = new();
 }
