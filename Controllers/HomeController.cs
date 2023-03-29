@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RemoteWork.Models;
 
@@ -6,9 +7,16 @@ namespace RemoteWork.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public HomeController(UserManager<ApplicationUser> userManager)
     {
-        return View();
+        _userManager = userManager;
+    }
+    public async Task<IActionResult> Index()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        return View(user);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
