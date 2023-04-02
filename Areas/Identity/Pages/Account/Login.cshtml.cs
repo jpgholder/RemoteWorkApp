@@ -75,7 +75,7 @@ namespace RemoteWork.Areas.Identity.Pages.Account
                 {
                     return LocalRedirect(returnUrl);
                 }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Неверные данные для авторизации");
                 return Page();
             }
 

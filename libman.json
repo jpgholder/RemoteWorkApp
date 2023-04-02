@@ -4,19 +4,39 @@
   "libraries": [
     {
       "library": "jquery@3.6.0",
-      "destination": "wwwroot/lib/jquery/"
+      "destination": "wwwroot/lib/jquery/",
+      "files": [
+        "jquery.min.js"
+      ]
     },
     {
       "library": "bootstrap@5.1.0",
-      "destination": "wwwroot/lib/bootstrap/"
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "css/bootstrap.min.css",
+        "js/bootstrap.bundle.min.js"
+      ]
     },
     {
       "library": "jquery-validate@1.17.0",
-      "destination": "wwwroot/lib/jquery-validation"
+      "destination": "wwwroot/lib/jquery-validation",
+      "files": [
+        "jquery.validate.min.js"
+      ]
     },
     {
       "library": "jquery-validation-unobtrusive@4.0.0",
-      "destination": "wwwroot/lib/jquery-validation"
+      "destination": "wwwroot/lib/jquery-validation",
+      "files": [
+        "jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "microsoft-signalr@7.0.4",
+      "destination": "wwwroot/lib/signalr",
+      "files": [
+        "signalr.min.js"
+      ]
     }
   ]
 }

@@ -11,7 +11,6 @@ public class Team
     [Required(ErrorMessage = "Обязательное поле")]
     [DisplayName("Название команды")]
     public string Name { get; set; } = default!;
-    [DisplayName("Тимлид")]
     public string LeadId { get; set; } = default!;
     public ApplicationUser Lead { get; set; } = default!;
 

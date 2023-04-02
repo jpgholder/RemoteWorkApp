@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,43 +8,35 @@ using RemoteWork.Models;
 
 namespace RemoteWork.Controllers;
 
-public class TeamMember : Attribute, IAuthorizationFilter
-{
-    public void OnAuthorization(AuthorizationFilterContext context)
-    {
-        var userManager = context.HttpContext.RequestServices.GetService<UserManager<ApplicationUser>>()!;
-        var user = userManager.GetUserAsync(context.HttpContext.User).Result!;
-        var teamId = context.RouteData.Values["id"];
-        if (teamId == null)
-            context.Result = new NotFoundResult();
-        else if (user.TeamId != teamId.ToString())
-            context.Result = new ForbidResult();
-    }
-}
-
 [Authorize]
 public class TeamController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
-
+    private ApplicationUser _user = default!;
     public TeamController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _userManager = userManager;
     }
     
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        _user = (await _userManager.GetUserAsync(User))!;
+        await base.OnActionExecutionAsync(context, next);
+    }
+    
     private bool TeamExists(string id)
     {
-        return (_context.Team?.Any(e => e.TeamId == id)).GetValueOrDefault();
+        return (_context.Teams?.Any(e => e.TeamId == id)).GetValueOrDefault();
     }
+    
     
     // GET Create
     public IActionResult Create()
     {
         return View();
     }
-
     
     // POST Create
     [HttpPost]
@@ -53,12 +44,7 @@ public class TeamController : Controller
     public async Task<IActionResult> Create([Bind("Name")] Team team)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return View(team);
-        }
-
-        if (user.TeamId != null)
+        if (user!.TeamId != null)
         {
             ModelState.AddModelError(string.Empty, "Вы уже являетесь участником команды");
             return View(team);
@@ -71,7 +57,7 @@ public class TeamController : Controller
         user.TeamId = team.TeamId;
         var res = await _userManager.UpdateAsync(user);
         if (res == IdentityResult.Success)
-            return RedirectToAction("Info", "Team", new { id = team.TeamId });
+            return RedirectToAction("Info", "Team", null);
 
         foreach (var err in res.Errors)
             ModelState.AddModelError(string.Empty, err.Description);
@@ -79,32 +65,30 @@ public class TeamController : Controller
     }
 
     // GET Info
-    [TeamMember]
-    [HttpGet("Team/{id:guid}")]
-    public async Task<IActionResult> Info(Guid id)
+    [HttpGet("Team/")]
+    public async Task<IActionResult> Info()
     {
-        var team = await _context.Team.Include(t => t.Lead)
+        if (_user.TeamId == null)
+            return RedirectToAction("Join", "Team", null);
+        
+        var team = await _context.Teams.Include(t => t.Lead)
             .Include(t => t.Members)
-            .FirstOrDefaultAsync(t => t.TeamId == id.ToString());
-        if (team == null)
-            return NotFound();
-
+            .FirstOrDefaultAsync(t => t.TeamId == _user.TeamId);
         return View(team);
     }
-
+    
     // POST Update
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost("Team/{id:guid}"), ActionName("Info")]
-    [TeamMember, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(Guid id)
+    [HttpPost("Team/"), ActionName("Info")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update()
     {
-        var team = await _context.Team.FirstOrDefaultAsync(t => t.TeamId == id.ToString());
-        if (id.ToString() != team?.TeamId)
-        {
-            return NotFound();
-        }
-        if (team.LeadId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        if (_user.TeamId == null)
+            return RedirectToAction("Join", "Team", null);
+        
+        var team = await _context.Teams.FirstOrDefaultAsync(t => t.TeamId == _user.TeamId);
+        if (team!.LeadId != _user.Id)
             return Forbid("Вы не являетесь тимлидом данной команды");
         if (!await TryUpdateModelAsync(team, "", t => t.Name)) return View(team);
         try
@@ -117,33 +101,29 @@ public class TeamController : Controller
             {
                 return NotFound();
             }
-
+    
             throw;
         }
-        return RedirectToAction(nameof(Info), new { id = team.TeamId });
+        return RedirectToAction(nameof(Info));
     }
 
     // POST User exit from team
-    [HttpPost("Team/{id:guid}/Quit")]
-    [TeamMember, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Quit(Guid id)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Quit()
     {
-        var team = await _context.Team.Include(t => t.Members)
-            .FirstOrDefaultAsync(t => t.TeamId == id.ToString());
-        if (team == null)
+        if (_user.TeamId == null)
+            return RedirectToAction("Join", "Team", null);
+        
+        var team = await _context.Teams.Include(t => t.Members)
+            .FirstOrDefaultAsync(t => t.TeamId == _user!.TeamId);
+        _user.TeamId = null;
+        if (_user.Id == team!.LeadId)
         {
-            return NotFound();
-        }
-
-        var user = await _userManager.GetUserAsync(User);
-        user!.TeamId = null;
-        if (user.Id == team.LeadId)
-        {
-            var newLeadId = team.Members?.FirstOrDefault(m => m.Id != user.Id)?.Id;
+            var newLeadId = team.Members?.FirstOrDefault(m => m.Id != _user.Id)?.Id;
             if (newLeadId != null)
                 team.LeadId = newLeadId;
             else
-                _context.Team.Remove(team);
+                _context.Teams.Remove(team);
         }
 
         await _context.SaveChangesAsync();
@@ -151,16 +131,16 @@ public class TeamController : Controller
     }
 
     // POST Delete
-    [HttpPost("Team/{id:guid}/Delete")]
-    [TeamMember, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(Guid id)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete()
     {
-        var team = await _context.Team.FindAsync(id.ToString());
-        if (team == null)
-            return NotFound();
-        if (team.LeadId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        if (_user.TeamId == null)
+            return RedirectToAction("Join", "Team", null);
+        
+        var team = await _context.Teams.FindAsync(_user.TeamId);
+        if (team!.LeadId != _user.Id)
             return Forbid("Вы не являетесь тимлидом данной команды");
-        _context.Team.Remove(team);
+        _context.Teams.Remove(team);
         await _context.SaveChangesAsync();
         return RedirectToAction("Index", "Home");
     }
@@ -175,8 +155,7 @@ public class TeamController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Join([Bind("TeamId")] Team team)
     {
-        var user = (await _userManager.GetUserAsync(User))!;
-        if (user.TeamId != null)
+        if (_user.TeamId != null)
         {
             ModelState.AddModelError(string.Empty, "Вы уже являетесь участником команды");
             return View(team);
@@ -188,21 +167,13 @@ public class TeamController : Controller
             return View(team);
         }
         
-        user.TeamId = team.TeamId;
-        var res = await _userManager.UpdateAsync(user);
+        _user.TeamId = team.TeamId;
+        var res = await _userManager.UpdateAsync(_user);
         if (res == IdentityResult.Success)
-            return RedirectToAction("Info", "Team", new { id = team.TeamId });
+            return RedirectToAction("Index", "Home", null);
 
         foreach (var err in res.Errors)
             ModelState.AddModelError(string.Empty, err.Description);
         return View(team);
     }
-    // [HttpGet("Team/{id}/Chat")]
-    // public Task<IActionResult> Chat(string id)
-    // {
-    //     return Task.FromResult<IActionResult>(Content("test"));
-    // }
-    
-    // GET Chat messages
-    
 }

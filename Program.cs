@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteWork.Data;
 using RemoteWork.Models;
 using Microsoft.AspNetCore.Identity;
+using RemoteWork.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+builder.Services.AddSignalR();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
         options.Lockout.AllowedForNewUsers = false;
@@ -23,9 +24,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
-
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -38,28 +37,15 @@ else
     app.UseHsts();
 }
 
-app.UseWebSockets();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+// app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}");
-// app.MapControllerRoute(
-//     name: "create",
-//     pattern: "Team/Create",
-//     defaults: new { controller = "Team", action = "Create" });
-// app.MapControllerRoute(
-//     name: "info",
-//     pattern: "Team/{id:guid}/",
-//     defaults: new { controller = "Team", action = "Info" });
-// app.MapControllerRoute(
-//     name: "quit",
-//     pattern: "Team/{id?}",
-//     defaults: new { controller = "Team", action = "Info" });
-
-
 app.MapRazorPages();
+app.MapHub<ChatHub>("/TeamChat");
 app.Run();
