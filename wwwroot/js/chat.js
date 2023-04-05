@@ -48,6 +48,8 @@ sendButton.addEventListener("click", function (event) {
     event.preventDefault();
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value;
+    if (message === "")
+        return;
     connection.invoke("SendMessage", message);
     messageInput.value = "";
 });

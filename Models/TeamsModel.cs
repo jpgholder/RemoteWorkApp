@@ -9,11 +9,9 @@ public class Team
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string TeamId { get; set; } = default!;
     [Required(ErrorMessage = "Обязательное поле")]
-    [DisplayName("Название команды")]
     public string Name { get; set; } = default!;
     public string LeadId { get; set; } = default!;
     public ApplicationUser Lead { get; set; } = default!;
 
     public List<ApplicationUser>? Members { get; set; }
-    public List<Message>? Chat { get; set; } = new();
 }

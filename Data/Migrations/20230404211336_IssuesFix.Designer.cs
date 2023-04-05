@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RemoteWork.Data;
 
@@ -10,9 +11,11 @@ using RemoteWork.Data;
 namespace RemoteWork.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404211336_IssuesFix")]
+    partial class IssuesFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
@@ -246,7 +249,7 @@ namespace RemoteWork.Data.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RespondentId")
+                    b.Property<string>("ResponderId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TeamId")
@@ -259,11 +262,9 @@ namespace RemoteWork.Data.Migrations
 
                     b.HasKey("IssueId");
 
-                    b.HasIndex("RespondentId");
+                    b.HasIndex("ResponderId");
 
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Issues", (string)null);
+                    b.ToTable("Issues");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Message", b =>
@@ -288,9 +289,7 @@ namespace RemoteWork.Data.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Team", b =>
@@ -312,7 +311,7 @@ namespace RemoteWork.Data.Migrations
                     b.HasIndex("LeadId")
                         .IsUnique();
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -378,19 +377,11 @@ namespace RemoteWork.Data.Migrations
 
             modelBuilder.Entity("RemoteWork.Models.Issue", b =>
                 {
-                    b.HasOne("RemoteWork.Models.ApplicationUser", "Respondent")
+                    b.HasOne("RemoteWork.Models.ApplicationUser", "Responder")
                         .WithMany()
-                        .HasForeignKey("RespondentId");
+                        .HasForeignKey("ResponderId");
 
-                    b.HasOne("RemoteWork.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Respondent");
-
-                    b.Navigation("Team");
+                    b.Navigation("Responder");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Message", b =>
@@ -401,15 +392,7 @@ namespace RemoteWork.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RemoteWork.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Sender");
-
-                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Team", b =>

@@ -8,6 +8,7 @@ public class Message
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string MessageId { get; set; } = default!;
     public string TeamId { get; set; } = default!;
+    public Team? Team { get; set; }
     
     public string SenderId { get; set; } = default!;
     public ApplicationUser? Sender { get; set; }

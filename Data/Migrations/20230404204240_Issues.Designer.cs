@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RemoteWork.Data;
 
@@ -10,9 +11,11 @@ using RemoteWork.Data;
 namespace RemoteWork.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404204240_Issues")]
+    partial class Issues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
@@ -232,38 +235,15 @@ namespace RemoteWork.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<byte[]>("FileData")
                         .HasColumnType("BLOB");
 
                     b.Property<string>("FileName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RespondentId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TeamId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("IssueId");
 
-                    b.HasIndex("RespondentId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Issues", (string)null);
+                    b.ToTable("Issues");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Message", b =>
@@ -288,9 +268,7 @@ namespace RemoteWork.Data.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Team", b =>
@@ -312,7 +290,7 @@ namespace RemoteWork.Data.Migrations
                     b.HasIndex("LeadId")
                         .IsUnique();
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -376,23 +354,6 @@ namespace RemoteWork.Data.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("RemoteWork.Models.Issue", b =>
-                {
-                    b.HasOne("RemoteWork.Models.ApplicationUser", "Respondent")
-                        .WithMany()
-                        .HasForeignKey("RespondentId");
-
-                    b.HasOne("RemoteWork.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Respondent");
-
-                    b.Navigation("Team");
-                });
-
             modelBuilder.Entity("RemoteWork.Models.Message", b =>
                 {
                     b.HasOne("RemoteWork.Models.ApplicationUser", "Sender")
@@ -401,15 +362,7 @@ namespace RemoteWork.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RemoteWork.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Sender");
-
-                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Team", b =>
