@@ -5,3 +5,7 @@
 .message {
   max-width: max-content;
 }
+
+.issue-btn {
+  width: 135px;
+}
