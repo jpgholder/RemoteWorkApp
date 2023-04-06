@@ -19,14 +19,6 @@ public class TaskController : Controller
         _userManager = userManager;
     }
 
-    // GET: Task
-    public async Task<IActionResult> Index()
-    {
-        return _context.Issues != null
-            ? View(await _context.Issues.ToListAsync())
-            : Problem("Entity set 'ApplicationDbContext.Issues'  is null.");
-    }
-
     // GET: Task/Details/5
     public async Task<IActionResult> Details(int? id)
     {
@@ -43,6 +35,27 @@ public class TaskController : Controller
         }
 
         return View(issue);
+    }
+    
+    // GET Task/:id
+    [Route("Task/{id:int}")]
+    public async Task<IActionResult> Index(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var issue = await _context.Issues
+            .FirstOrDefaultAsync(i => i.IssueId == id && i.TeamId == user!.TeamId);
+        if (issue == null)
+        {
+            return NotFound();
+        }
+        return View(issue);
+    }
+
+    [Route("Task/{id:int}")]
+    [HttpPost]
+    public async Task<IActionResult> Answer(Issue issue, IFormFile file)
+    {
+        return RedirectToAction(nameof(Index), new {id = issue.IssueId});
     }
 
     // GET Create task
@@ -69,7 +82,7 @@ public class TaskController : Controller
         {
             _context.Add(issue);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { id = issue.IssueId });
         }
 
         return View(issue);
