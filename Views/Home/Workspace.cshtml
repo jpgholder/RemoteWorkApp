@@ -1,50 +1,66 @@
-﻿@model Tuple<ApplicationUser, List<Message>>
+﻿@model Tuple<ApplicationUser, Team>
 
 <div class="container">
-    <div class="col-sm-10 col-md-7 col-lg-5 mx-auto">
-        <div class="card">
-            <div class="card-header text-center">
-                Чат команды
-            </div>
-            <div class="card-body overflow-auto" id="chat" style="max-height: 400px;">
-                @if (Model.Item2.Count == 0)
+    <div class="row d-flex flex-column flex-lg-row">
+        @if (Model.Item2.Issues?.Count != 0)
+        {
+            <div class="col d-flex flex-wrap gap-2">
+                @foreach (var issue in Model.Item2.Issues!)
                 {
-                    <p class="fw-bold text-center mb-0" id="no-messages">
-                        Сообщений пока что нет
-                    </p>
-                }
-                else
-                {
-                    @foreach (var message in Model.Item2)
-                    {
-                        <div>
-                            @if (message.Sender!.Id != Model.Item1.Id)
-                            {
-                                <p class="mb-1">@message.Sender!.FullName</p>
-                                <p class="bg-primary text-white p-2 rounded message">@message.Content</p>
-                            }
-                            else
-                            {
-                                <p class="bg-light p-2 rounded border message ms-auto">@message.Content</p>
-                            }
-                        </div>
-                    }
-                }
-            </div>
-            <div class="card-footer">
-                <form>
-                    <div class="input-group">
-                        <input value="@Model.Item1.Id" type="hidden" id="user-id"/>
-                        <input type="text" class="form-control rounded" id="message-input" placeholder="Напишите сообщение">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" id="send-button">
-                                <svg class="bi bi-send-fill" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M15.964.686a.5.5 0 0 0-.65-.65l-.095.038L.767 5.854l-.001.001-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.563 2.903.432.275.275.432 2.903 4.563.002.002.26.41a.5.5 0 0 0 .886-.083l.181-.453L15.926.78l.038-.095Zm-1.833 1.89.471-1.178-1.178.471L5.93 9.363l.338.215a.5.5 0 0 1 .154.154l.215.338 7.494-7.494Z"></path>
-                                </svg>
-                            </button>
+                    <div class="card ">
+                        <div class="card-body">
+                            <h5 class="card-title">@issue.Title</h5>  
+                            <p class="card-text">@issue.Description</p>
                         </div>
                     </div>
-                </form>
+                }
+            </div>
+        }
+        <div class="col-sm-10 col-md-8 col-lg-5 mx-auto">
+            <div class="card">
+                <div class="card-header text-center">
+                    Чат команды
+                </div>
+                <div class="card-body overflow-auto" id="chat" style="max-height: 400px;">
+                    @if (Model.Item2.Messages!.Count == 0)
+                    {
+                        <p class="fw-bold text-center mb-0" id="no-messages">
+                            Сообщений пока что нет
+                        </p>
+                    }
+                    else
+                    {
+                        @foreach (var message in Model.Item2.Messages)
+                        {
+                            <div>
+                                @if (message.Sender!.Id != Model.Item1.Id)
+                                {
+                                    <p class="mb-1">@message.Sender!.FullName</p>
+                                    <p class="bg-primary text-white p-2 rounded message">@message.Content</p>
+                                }
+                                else
+                                {
+                                    <p class="bg-light p-2 rounded border message ms-auto">@message.Content</p>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="card-footer">
+                    <form>
+                        <div class="input-group">
+                            <input value="@Model.Item1.Id" type="hidden" id="user-id"/>
+                            <input type="text" class="form-control rounded" id="message-input" placeholder="Напишите сообщение">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" id="send-button">
+                                    <svg class="bi bi-send-fill" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M15.964.686a.5.5 0 0 0-.65-.65l-.095.038L.767 5.854l-.001.001-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.563 2.903.432.275.275.432 2.903 4.563.002.002.26.41a.5.5 0 0 0 .886-.083l.181-.453L15.926.78l.038-.095Zm-1.833 1.89.471-1.178-1.178.471L5.93 9.363l.338.215a.5.5 0 0 1 .154.154l.215.338 7.494-7.494Z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

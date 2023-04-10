@@ -19,31 +19,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<ApplicationUser>()
-            .HasOne(u => u.Team)
-            .WithMany(t => t.Members)
-            .HasForeignKey(u => u.TeamId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         modelBuilder.Entity<Team>()
             .HasOne(t => t.Lead)
-            .WithOne()
+            .WithOne(u => u.Team)
             .HasForeignKey<Team>(t => t.LeadId);
-
+        
         modelBuilder.Entity<Message>()
             .HasOne(m => m.Team)
-            .WithMany()
+            .WithMany(t => t.Messages)
+            .HasForeignKey(m => m.TeamId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Issue>()
             .HasOne(m => m.Team)
-            .WithMany()
+            .WithMany(t => t.Issues)
+            .HasForeignKey(i => i.TeamId)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        // modelBuilder.Entity<Team>()
-        //     .HasMany(t => t.Issues)
-        //     .WithOne(i => i.Team!)
-        //     .HasForeignKey(i => i.TeamId)
-        //     .OnDelete(DeleteBehavior.Cascade);
     }
 }

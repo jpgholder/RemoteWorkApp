@@ -25,7 +25,9 @@ public class IssueController : Controller
     public async Task<IActionResult> Index(int id)
     {
         var user = await _userManager.GetUserAsync(User);
-        var issue = await _context.Issues.Include(i => i.Respondent)
+        var issue = await _context.Issues
+            .Include(i => i.Respondent)
+            .Include(i => i.Team)
             .FirstOrDefaultAsync(i => i.IssueId == id && i.TeamId == user!.TeamId);
         if (issue == null)
         {
@@ -64,6 +66,22 @@ public class IssueController : Controller
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index), new { id = issue.IssueId });
+    }
+    
+    public async Task<IActionResult> GetResponseFile(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var issue = await _context.Issues
+            .FirstOrDefaultAsync(i => i.IssueId == id && i.TeamId == user!.TeamId); 
+        if (issue?.ResponseFileData == null)
+        {
+            return NotFound();
+        }
+        var fileData = issue.ResponseFileData;
+        const string contentType = "application/octet-stream";
+        var fileName = issue.ResponseFileName;
+        
+        return File(fileData, contentType, fileName);
     }
 
     // GET Create task

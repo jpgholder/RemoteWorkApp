@@ -14,4 +14,6 @@ public class Team
     public ApplicationUser Lead { get; set; } = default!;
 
     public List<ApplicationUser>? Members { get; set; }
+    public List<Message>? Messages { get; set; }
+    public List<Issue>? Issues { get; set; }
 }

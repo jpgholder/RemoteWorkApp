@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,15 +20,23 @@ public class HomeController : Controller
     }
     public async Task<IActionResult> Index()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
         {
             return View();
         }
-        var chat = await _context.Messages
-            .Include(m => m.Sender)
-            .Where(m => m.TeamId == user.TeamId).ToListAsync();
-        var tuple = new Tuple<ApplicationUser, List<Message>>(user, chat);
+
+        var user = await _userManager.GetUserAsync(User);
+        Team? team = null;
+        if (user?.TeamId != null)
+        {
+            team = await _context.Teams
+                .Include(t => t.Issues)
+                .Include(t => t.Messages)
+                 !.ThenInclude(m => m.Sender)
+                .FirstOrDefaultAsync(t => t.TeamId == user.TeamId);
+        }
+        var tuple = new Tuple<ApplicationUser?, Team?>(user, team);
         return View(tuple);
     }
 

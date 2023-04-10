@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RemoteWork.Data;
 
@@ -10,9 +11,11 @@ using RemoteWork.Data;
 namespace RemoteWork.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230407101612_AddedTeamNavProps")]
+    partial class AddedTeamNavProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
@@ -374,9 +377,12 @@ namespace RemoteWork.Data.Migrations
 
             modelBuilder.Entity("RemoteWork.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("RemoteWork.Models.Team", null)
+                    b.HasOne("RemoteWork.Models.Team", "Team")
                         .WithMany("Members")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Issue", b =>
@@ -386,7 +392,7 @@ namespace RemoteWork.Data.Migrations
                         .HasForeignKey("RespondentId");
 
                     b.HasOne("RemoteWork.Models.Team", "Team")
-                        .WithMany("Issues")
+                        .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -405,7 +411,7 @@ namespace RemoteWork.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("RemoteWork.Models.Team", "Team")
-                        .WithMany("Messages")
+                        .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -418,7 +424,7 @@ namespace RemoteWork.Data.Migrations
             modelBuilder.Entity("RemoteWork.Models.Team", b =>
                 {
                     b.HasOne("RemoteWork.Models.ApplicationUser", "Lead")
-                        .WithOne("Team")
+                        .WithOne()
                         .HasForeignKey("RemoteWork.Models.Team", "LeadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -426,18 +432,9 @@ namespace RemoteWork.Data.Migrations
                     b.Navigation("Lead");
                 });
 
-            modelBuilder.Entity("RemoteWork.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Team");
-                });
-
             modelBuilder.Entity("RemoteWork.Models.Team", b =>
                 {
-                    b.Navigation("Issues");
-
                     b.Navigation("Members");
-
-                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }
