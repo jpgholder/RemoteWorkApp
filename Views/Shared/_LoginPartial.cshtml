@@ -9,6 +9,9 @@
             <a class="nav-link text-dark" asp-controller="Team" asp-action="Info">Команда</a>
         </li>
         <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Issue" asp-action="Create">Создать задачу</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index">Профиль</a>
         </li>
         <li class="nav-item">
@@ -20,10 +23,10 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Зарегистрироваться</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Войти</a>
         </li>
     }
 </ul>

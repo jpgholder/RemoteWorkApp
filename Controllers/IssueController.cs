@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +50,10 @@ public class IssueController : Controller
             return NotFound();
         }
 
+        if (issue.Status != Status.Opened)
+        {
+            return new ForbidResult("Задача уже закрыта");
+        }
         if (issue.RespondentId != null)
         {
             return new ForbidResult("На данную задачу ответ уже был отправлен");
@@ -90,7 +95,7 @@ public class IssueController : Controller
         return View();
     }
 
-    // POST: Create task
+    // POST Create task
     [HttpPost, ActionName("Create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateIssue()
@@ -113,95 +118,54 @@ public class IssueController : Controller
 
         return View(issue);
     }
-
-    // if (file.Length == 0)
-    // {
-    //     ModelState.AddModelError(string.Empty, "Файл не выбран");
-    //     return View(issue);
-    // }
-    // issue.PerformerId = user!.Id;
-    // issue.FileName = file.FileName;
-    // using var memoryStream = new MemoryStream();
-    // await file.CopyToAsync(memoryStream);
-    // issue.FileData = memoryStream.ToArray();
-
-    // POST: Task/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    
+    // POST Finish task
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("IssueId,FileName,FileData")] Issue issue)
+    public async Task<IActionResult> Finish(int id)
     {
-        if (id != issue.IssueId)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(issue);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!IssueExists(issue.IssueId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    // GET: Task/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null || _context.Issues == null)
-        {
-            return NotFound();
-        }
-
+        var user = await _context.Users
+            .Include(u => u.Team)
+            .FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
         var issue = await _context.Issues
-            .FirstOrDefaultAsync(m => m.IssueId == id);
+            .FirstOrDefaultAsync(i => i.IssueId == id && i.TeamId == user.TeamId);
         if (issue == null)
         {
             return NotFound();
         }
 
-        return RedirectToAction(nameof(Index));
-    }
-
-    // POST: Task/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        if (_context.Issues == null)
+        if (user.Id != issue.CreatorId && user.Team!.LeadId != user.Id)
         {
-            return Problem("Entity set 'ApplicationDbContext.Issues'  is null.");
+            return new ForbidResult("У вас нет прав на завершение этой задачи");
         }
 
-        var issue = await _context.Issues.FindAsync(id);
-        if (issue != null)
-        {
-            _context.Issues.Remove(issue);
-        }
-
+        issue.Status = Status.Finished;
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { id = issue.IssueId });
     }
-
-    private bool IssueExists(int id)
+    
+    // POST Finish task
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Close(int id)
     {
-        return (_context.Issues?.Any(e => e.IssueId == id)).GetValueOrDefault();
+        var user = await _context.Users
+            .Include(u => u.Team)
+            .FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var issue = await _context.Issues
+            .FirstOrDefaultAsync(i => i.IssueId == id && i.TeamId == user.TeamId);
+        if (issue == null)
+        {
+            return NotFound();
+        }
+
+        if (user.Id != issue.CreatorId && user.Team!.LeadId != user.Id)
+        {
+            return new ForbidResult("У вас нет прав на завершение этой задачи");
+        }
+
+        issue.Status = Status.Closed;
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index), new { id = issue.IssueId });
     }
 }
