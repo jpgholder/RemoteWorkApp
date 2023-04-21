@@ -34,7 +34,10 @@ public class HomeController : Controller
                 .Include(t => t.Issues)
                 .Include(t => t.Messages)
                  !.ThenInclude(m => m.Sender)
+                .AsSingleQuery()
                 .FirstOrDefaultAsync(t => t.TeamId == user.TeamId);
+            if (team != null)
+                team.Messages = team.Messages?.OrderBy(m => m.SendedAt).ToList();
         }
         var tuple = new Tuple<ApplicationUser?, Team?>(user, team);
         return View(tuple);

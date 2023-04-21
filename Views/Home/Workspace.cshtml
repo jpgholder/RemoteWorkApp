@@ -7,7 +7,10 @@
                 <div class="card-header text-center">
                     Чат команды
                 </div>
-                <div class="card-body overflow-auto" id="chat" style="max-height: 400px;">
+                <div
+                    class="card-body overflow-auto"
+                    id="chat"
+                    style="max-height: 400px;">
                     @if (Model.Item2.Messages!.Count == 0)
                     {
                         <p class="fw-bold text-center mb-0" id="no-messages">
@@ -59,7 +62,7 @@
                         Status.Finished => "border-success",
                         Status.Closed => "border-danger",
                         _ => ""
-                    };
+                        };
                     <div class="card shadow-sm w-100 @className">
                         <a asp-controller="Issue" asp-action="Index" asp-route-id="@issue.IssueId" class="text-decoration-none text-black">
                             <div class="card-body">
@@ -73,6 +76,9 @@
         }
     </div>
 </div>
-
+<script>
+    const chatBody = document.getElementById("chat");
+    chatBody.scrollTop = chatBody.scrollHeight
+</script>
 <script src="~/lib/signalr/signalr.min.js"></script>
 <script src="~/js/chat.js"></script>

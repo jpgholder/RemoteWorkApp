@@ -14,4 +14,5 @@ public class Message
     public ApplicationUser? Sender { get; set; }
     
     public string Content { get; set; } = default!;
+    public DateTime SendedAt { get; set; }
 }

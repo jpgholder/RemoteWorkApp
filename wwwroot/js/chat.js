@@ -4,12 +4,12 @@ const sendButton = document.getElementById("send-button");
 const chat = document.getElementById("chat");
 const noMessages = document.getElementById("no-messages");
 const userId = document.getElementById("user-id").value;
+
 sendButton.disabled = true;
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/TeamChat", {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
+        skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets
     })
     .build();
 
@@ -24,8 +24,8 @@ connection.on("ReceiveMessage", function (message) {
     if (noMessages) {
         noMessages.remove();
     }
+    const div = document.createElement("div");
     if (message.senderId !== userId) {
-        const div = document.createElement("div");
         const senderName = document.createElement("p");
         senderName.classList.add("mb-1");
         senderName.textContent = message.senderName;
@@ -35,21 +35,20 @@ connection.on("ReceiveMessage", function (message) {
         div.append(senderName, messageContent);
         chat.appendChild(div);
     } else {
-        const div = document.createElement("div");
         const messageContent = document.createElement("p");
         messageContent.classList = "bg-light p-2 rounded border message ms-auto";
         messageContent.textContent = message.content;
         div.appendChild(messageContent);
         chat.appendChild(div);
     }
+    div.scrollIntoView()
 });
 
 sendButton.addEventListener("click", function (event) {
     event.preventDefault();
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value;
-    if (message === "")
-        return;
+    if (message === "") return;
     connection.invoke("SendMessage", message);
     messageInput.value = "";
 });

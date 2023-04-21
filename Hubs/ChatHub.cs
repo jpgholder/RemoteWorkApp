@@ -41,7 +41,8 @@ public class ChatHub : Hub
         {
             Content = messageContent,
             SenderId = user.Id,
-            TeamId = user.TeamId
+            TeamId = user.TeamId,
+            SendedAt = DateTime.Now
         };
         _context.Messages.Add(message);
         await _context.SaveChangesAsync();
