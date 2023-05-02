@@ -1,7 +1,7 @@
 ﻿@model RemoteWork.Models.Team
 
 @{
-    ViewData["Title"] = "Вступить в команду";
+    ViewData["Title"] = "Присоединиться к команде";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,7 +10,7 @@
         <div class="col-md-8 col-lg-6 col-xl-5">
             <div class="card mb-5">
                 <div class="card-body p-sm-5">
-                    <h2 class="text-center mb-4">Вступить в команду</h2>
+                    <h2 class="text-center mb-4">Присоединиться к команде</h2>
                     <form asp-action="Join">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-floating mb-3">
@@ -19,7 +19,7 @@
                             <span asp-validation-for="TeamId" class="text-danger"></span>
                         </div>
                         <div>
-                            <button class="btn btn-primary d-block w-100" type="submit">Вступить</button>
+                            <button class="btn btn-primary d-block w-100" type="submit">Присоединиться</button>
                         </div>
                     </form>
                 </div>

@@ -1,16 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 
-
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Team" asp-action="Info">Команда</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Issue" asp-action="Create">Создать задачу</a>
-        </li>
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index">Профиль</a>
         </li>

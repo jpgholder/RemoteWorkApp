@@ -49,7 +49,6 @@ public class IssueController : Controller
         {
             return NotFound();
         }
-
         if (issue.Status != Status.Opened)
         {
             return new ForbidResult("Задача уже закрыта");
@@ -58,7 +57,6 @@ public class IssueController : Controller
         {
             return new ForbidResult("На данную задачу ответ уже был отправлен");
         }
-
         issue.ResponseText = responseText;
         issue.RespondentId = user!.Id;
         if (responseFile != null)
@@ -68,7 +66,6 @@ public class IssueController : Controller
             await responseFile.CopyToAsync(memoryStream);
             issue.ResponseFileData = memoryStream.ToArray();
         }
-
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index), new { id = issue.IssueId });
     }
