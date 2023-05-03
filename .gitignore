@@ -7,7 +7,7 @@ app.db
 app.db-shm
 app.db-wal
 wwwroot/lib/
-appsettings.Development.json
+appsettings.Production.json
 Properties/launchSettings.json
 .idea
 Layouts
