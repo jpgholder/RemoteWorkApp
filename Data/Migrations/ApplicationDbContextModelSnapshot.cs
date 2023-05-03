@@ -280,7 +280,7 @@ namespace RemoteWork.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Issues");
+                    b.ToTable("Issues", (string)null);
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Message", b =>
@@ -310,7 +310,7 @@ namespace RemoteWork.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("RemoteWork.Models.Team", b =>
@@ -332,7 +332,7 @@ namespace RemoteWork.Data.Migrations
                     b.HasIndex("LeadId")
                         .IsUnique();
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
