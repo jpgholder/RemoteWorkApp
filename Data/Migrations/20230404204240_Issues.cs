@@ -25,7 +25,7 @@ namespace RemoteWork.Data.Migrations
                     IssueId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     FileName = table.Column<string>(type: "TEXT", nullable: true),
-                    FileData = table.Column<byte[]>(type: "BLOB", nullable: true)
+                    FileData = table.Column<byte[]>(type: "BYTEA", nullable: true)
                 },
                 constraints: table =>
                 {

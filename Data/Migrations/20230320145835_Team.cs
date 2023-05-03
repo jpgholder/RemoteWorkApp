@@ -30,6 +30,20 @@ namespace RemoteWork.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.AddColumn<string>(
+                name: "TeamId",
+                table: "AspNetUsers",
+                type: "TEXT",
+                nullable: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_Team_TeamId",
+                table: "AspNetUsers",
+                column: "TeamId",
+                principalTable: "Team",
+                principalColumn: "TeamId",
+                onDelete: ReferentialAction.Cascade);
+            
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_TeamId",
                 table: "AspNetUsers",
@@ -41,15 +55,6 @@ namespace RemoteWork.Data.Migrations
                 table: "Team",
                 column: "LeadId",
                 unique: true);
-            
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_Team_TeamId",
-                table: "AspNetUsers",
-                column: "TeamId",
-                principalTable: "Team",
-                principalColumn: "TeamId",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />

@@ -10,7 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+        options.UseNpgsql(connectionString)
+        // options.UseSqlite(connectionString)
+    // builder.Configuration["ENVIRONMENT"] == "Development" ? options.UseSqlite(connectionString) :options.UseNpgsql(connectionString)
+);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSignalR();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
