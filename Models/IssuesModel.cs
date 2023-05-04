@@ -22,7 +22,9 @@ public class Issue
     public string? ResponseText { get; set; }
     public string? ResponseFileName { get; set; }
     public byte[]? ResponseFileData { get; set; }
+    [Required(ErrorMessage = "Обязательное поле")]
     public string Title { get; set; } = default!;
+    [Required(ErrorMessage = "Обязательное поле")]
     public string Description { get; set; } = default!;
     public Status Status { get; set; } = Status.Opened;
 }

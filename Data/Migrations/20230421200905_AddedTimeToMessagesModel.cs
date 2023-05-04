@@ -14,7 +14,7 @@ namespace RemoteWork.Data.Migrations
             migrationBuilder.AddColumn<DateTime>(
                 name: "SendedAt",
                 table: "Messages",
-                type: "TEXT",
+                type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }

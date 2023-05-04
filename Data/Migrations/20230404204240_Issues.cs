@@ -22,8 +22,7 @@ namespace RemoteWork.Data.Migrations
                 name: "Issues",
                 columns: table => new
                 {
-                    IssueId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    IssueId = table.Column<int>(type: "SERIAL", nullable: false),
                     FileName = table.Column<string>(type: "TEXT", nullable: true),
                     FileData = table.Column<byte[]>(type: "BYTEA", nullable: true)
                 },

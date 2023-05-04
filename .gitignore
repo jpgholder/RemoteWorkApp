@@ -7,6 +7,7 @@ app.db
 app.db-shm
 app.db-wal
 wwwroot/lib/
+appsettings.json
 appsettings.Production.json
 Properties/launchSettings.json
 .idea
