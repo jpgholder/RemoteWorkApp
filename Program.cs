@@ -7,37 +7,27 @@ using RemoteWork.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-string connectionString;
-if (builder.Configuration["ENVIRONMENT"] == "Development")
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") ?? builder.Configuration["DATABASE_URL"];
+if (databaseUrl == null)
+    throw new InvalidOperationException("DATABASE_URL not found");
+var databaseUri = new Uri(databaseUrl);
+var connectionString = new NpgsqlConnectionStringBuilder
 {
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-}
-else
-{
-    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    if (databaseUrl == null)
-        throw new InvalidOperationException("DATABASE_URL not found");
-    var databaseUri = new Uri(databaseUrl);
-    connectionString = new NpgsqlConnectionStringBuilder
-    {
-        Host = databaseUri.Host,
-        Port = databaseUri.Port,
-        Username = databaseUri.UserInfo.Split(':')[0],
-        Password = databaseUri.UserInfo.Split(':')[1],
-        Database = databaseUri.AbsolutePath.TrimStart('/'),
-    }.ToString();
-}
-
+    Host = databaseUri.Host,
+    Port = databaseUri.Port,
+    Username = databaseUri.UserInfo.Split(':')[0],
+    Password = databaseUri.UserInfo.Split(':')[1],
+    Database = databaseUri.AbsolutePath.TrimStart('/'),
+}.ToString();
+Console.WriteLine(connectionString);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connectionString)
+    options.UseNpgsql(connectionString)
 );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSignalR();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
         options.Lockout.AllowedForNewUsers = false;
         options.Password.RequireDigit = false;
         options.Password.RequireLowercase = false;
@@ -64,7 +54,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
-// app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",

@@ -109,12 +109,14 @@ namespace RemoteWork.Areas.Identity.Pages.Account.Manage
                 user.UserName = Input.UserName;
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
-                // await _userManager.SetUserNameAsync(user, Input.Username);
                 var res = await _userManager.UpdateAsync(user);
                 if (res != IdentityResult.Success)
                 {
                     foreach (var err in res.Errors)
-                        ModelState.AddModelError(string.Empty, err.Description!);
+                        ModelState.AddModelError(string.Empty,
+                            err.Code == "InvalidUserName"
+                                ? "Логин может состоять только из русских и латинских букв и цифр"
+                                : err.Description);
                     await LoadAsync(user);
                     return Page();
                 }

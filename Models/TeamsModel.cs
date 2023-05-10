@@ -7,6 +7,7 @@ namespace RemoteWork.Models;
 public class Team
 {   
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Required(ErrorMessage = "Обязательное поле")]
     public string TeamId { get; set; } = default!;
     [Required(ErrorMessage = "Обязательное поле")]
     public string Name { get; set; } = default!;

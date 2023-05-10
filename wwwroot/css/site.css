@@ -9,3 +9,12 @@
 .issue-btn {
   width: 135px;
 }
+
+.home-button {
+  display: inline-block;
+  text-decoration: underline;
+}
+
+.home-button:hover {
+  color: red;
+}
